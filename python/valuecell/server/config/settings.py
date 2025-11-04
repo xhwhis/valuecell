@@ -52,6 +52,17 @@ class Settings:
         # I18n Configuration
         self.LOCALE_DIR = self.BASE_DIR / "configs/locales"
 
+        # Telegram Configuration
+        self.TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+        self.TELEGRAM_WEBHOOK_URL = os.getenv("TELEGRAM_WEBHOOK_URL")
+        self.TELEGRAM_PARSE_MODE = os.getenv("TELEGRAM_PARSE_MODE", "Markdown")
+        self.TELEGRAM_REQUEST_TIMEOUT = float(
+            os.getenv("TELEGRAM_REQUEST_TIMEOUT", "30")
+        )
+        self.TELEGRAM_POLLING_INTERVAL = float(
+            os.getenv("TELEGRAM_POLLING_INTERVAL", "0.5")
+        )
+
     def get_database_config(self) -> dict:
         """Get database configuration."""
         return {"url": self.DATABASE_URL}

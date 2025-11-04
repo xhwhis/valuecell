@@ -11,6 +11,7 @@ PY_DIR="$SCRIPT_DIR/python"
 
 BACKEND_PID=""
 FRONTEND_PID=""
+TELEGRAM_PID=""
 
 info()  { echo "[INFO]  $*"; }
 success(){ echo "[ OK ]  $*"; }
@@ -117,6 +118,18 @@ start_frontend() {
   info "Frontend PID: $FRONTEND_PID"
 }
 
+start_telegram() {
+  if [[ ! -d "$PY_DIR" ]]; then
+    warn "Backend directory not found; skipping telegram bot start"
+    return 0
+  fi
+  info "Starting telegram bot (uv run python -m valuecell.telegram.bot)..."
+  (
+    cd "$PY_DIR" && uv run python -m valuecell.telegram.bot
+  ) & TELEGRAM_PID=$!
+  info "Telegram bot PID: $TELEGRAM_PID"
+}
+
 cleanup() {
   echo
   info "Stopping services..."
@@ -125,6 +138,9 @@ cleanup() {
   fi
   if [[ -n "$BACKEND_PID" ]] && kill -0 "$BACKEND_PID" 2>/dev/null; then
     kill "$BACKEND_PID" 2>/dev/null || true
+  fi
+  if [[ -n "$TELEGRAM_PID" ]] && kill -0 "$TELEGRAM_PID" 2>/dev/null; then
+    kill "$TELEGRAM_PID" 2>/dev/null || true
   fi
   success "Stopped"
 }
@@ -142,6 +158,7 @@ Description:
 Options:
   --no-frontend   Start backend only
   --no-backend    Start frontend only
+  --tg            Start telegram bot (in addition to selected services)
   -h, --help      Show help
 EOF
 }
@@ -149,11 +166,13 @@ EOF
 main() {
   local start_frontend_flag=1
   local start_backend_flag=1
+  local start_telegram_flag=0
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --no-frontend) start_frontend_flag=0; shift ;;
       --no-backend)  start_backend_flag=0; shift ;;
+      --tg)          start_telegram_flag=1; shift ;;
       -h|--help)     print_usage; exit 0 ;;
       *) error "Unknown argument: $1"; print_usage; exit 1 ;;
     esac
@@ -169,6 +188,10 @@ main() {
     start_frontend
   fi
   sleep 5  # Give frontend a moment to start
+
+  if (( start_telegram_flag )); then
+    start_telegram
+  fi
 
   if (( start_backend_flag )); then
     start_backend

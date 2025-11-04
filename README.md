@@ -85,6 +85,12 @@ Welcome to join our Discord community to share feedback and issues you encounter
 - **Multi-Agent Framework Compatible**: Support Langchain, Agno by A2A Protocol for research and development integration
 - **Exchange Connectivity**: Optional live routing to OKX with built-in guardrails
 
+## Telegram Bot Integration
+- **Group & Private Chats**: Use `/chat` to talk with Super Agent directly from Telegram chats
+- **Agent Switching**: `/agents` lists available agents, `/agent <name>` sets the default agent per user
+- **Conversation History**: `/history` surfaces the latest responses for quick reference
+- **Setup**: Configure `TELEGRAM_BOT_TOKEN` (and optional webhook settings) in `.env`, then run `uv run python -m valuecell.telegram.bot`
+
 # Quick Start
 
 ValueCell is a Python-based application featuring a comprehensive web interface. Follow this guide to set up and run the application efficiently.
